@@ -1,6 +1,6 @@
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
-
+import { RecaptchaModule } from 'ng-recaptcha';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { LandingComponent } from './components/landing/landing.component';
@@ -12,7 +12,6 @@ import { RegisterComponent } from './components/register/register.component';
 import { ReactiveFormsModule } from '@angular/forms';
 import { LoginComponent } from './components/login/login.component';
 import { ProfileComponent } from './components/profile/profile.component';
-import { QuestionsComponent } from './components/questions/questions.component';
 import { HttpClientModule } from '@angular/common/http';
 import { AdminpanelComponent } from './components/adminpanel/adminpanel.component';
 import { ContactComponent } from './components/contact/contact.component';
@@ -28,7 +27,6 @@ import { ContactComponent } from './components/contact/contact.component';
     RegisterComponent,
     LoginComponent,
     ProfileComponent,
-    QuestionsComponent,
     AdminpanelComponent,
     ContactComponent
   ],
@@ -36,7 +34,8 @@ import { ContactComponent } from './components/contact/contact.component';
     BrowserModule,
     AppRoutingModule,
     ReactiveFormsModule,
-    HttpClientModule
+    HttpClientModule,
+    RecaptchaModule
   ],
   providers: [],
   bootstrap: [AppComponent]
