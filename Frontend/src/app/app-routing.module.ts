@@ -6,7 +6,6 @@ import { NutinfoComponent } from './components/nutinfo/nutinfo.component';
 import { RegisterComponent } from './components/register/register.component';
 import { LoginComponent } from './components/login/login.component';
 import { ProfileComponent } from './components/profile/profile.component';
-import { QuestionsComponent } from './components/questions/questions.component';
 import { AdminpanelComponent } from './components/adminpanel/adminpanel.component';
 import { ContactComponent } from './components/contact/contact.component';
 const routes: Routes = [
@@ -17,7 +16,6 @@ const routes: Routes = [
   {path:'register',component:RegisterComponent},
   {path:'login',component:LoginComponent},
   {path:'profile',component:ProfileComponent},
-  {path:'questions',component:QuestionsComponent},
   {path:'adminpanel',component:AdminpanelComponent},
   {path: 'contact', component:ContactComponent}
 ];
