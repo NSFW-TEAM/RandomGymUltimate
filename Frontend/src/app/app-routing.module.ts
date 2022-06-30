@@ -7,6 +7,7 @@ import { RegisterComponent } from './components/register/register.component';
 import { LoginComponent } from './components/login/login.component';
 import { ProfileComponent } from './components/profile/profile.component';
 import { AdminpanelComponent } from './components/adminpanel/adminpanel.component';
+import { ContactComponent } from './components/contact/contact.component';
 const routes: Routes = [
   {path:'',redirectTo:'/landing',pathMatch:'full'},
   {path:'landing',component:LandingComponent},
@@ -15,7 +16,8 @@ const routes: Routes = [
   {path:'register',component:RegisterComponent},
   {path:'login',component:LoginComponent},
   {path:'profile',component:ProfileComponent},
-  {path:'adminpanel',component:AdminpanelComponent}
+  {path:'adminpanel',component:AdminpanelComponent},
+  {path: 'contact', component:ContactComponent}
 ];
 
 @NgModule({
