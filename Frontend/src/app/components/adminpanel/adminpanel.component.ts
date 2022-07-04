@@ -1,6 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import * as $ from "jquery";
+import { isEmptyObject } from 'jquery';
+import {EjercicioService} from '../../services/ejercicio.service';
+import { LoginService } from '../../services/login.service';
 
 @Component({
   selector: 'app-adminpanel',
@@ -11,7 +14,8 @@ export class AdminpanelComponent implements OnInit {
   public formAddExe!: FormGroup;
   public formDelExe!: FormGroup;
   public formDelUser!: FormGroup;
-  constructor(private formBuilder: FormBuilder) { }
+  constructor(private formBuilder: FormBuilder,private servicio:EjercicioService,private servicioUsers:LoginService) {
+  }
 
   ngOnInit(): void {
     this.formAddExe = this.formBuilder.group({
@@ -37,51 +41,77 @@ export class AdminpanelComponent implements OnInit {
     $(tag).removeAttr("hidden");
   }
 
-  AddExe(){
-    var nombre = this.formAddExe.controls['addexename'].value;
-    var descripcion = this.formAddExe.controls['addexedesc'].value;
-    var urlimagen = this.formAddExe.controls['addexefile'].value;
-    var dificultad = this.formAddExe.controls['addexediff'].value;
-    var tren = this.formAddExe.controls['addexearea'].value;
-    var areatrabajada = this.formAddExe.controls['addexeworkarea'].value;
-    var idejercicio:string;
-    var aux:number = 0;
-    //lo siguiente asigna un id según el id más alto existente, se debe hacer con API y DB, no con JSON local
-    $.getJSON("/assets/data/ejercicios.json", function(data) {
-      $.each(data.ejercicio,function(i, exe){
-        if(aux<parseInt(exe.id)){
-          aux = parseInt(exe.id);
-        }
-      });
-      idejercicio = (aux+1).toString();
-      //aquí es donde se procesaría la info con la API y DB
-      $("#resultadoadd").html("El ejercicio \""+nombre+"\" se ha agregado exitosamente, con ID: "+idejercicio+" (PLACEHOLDER)");
-      alert("Nombre: "+nombre+"\nDescripción: "+descripcion+"\nDificultad: "+dificultad+"\nTren objetivo: "+tren+"\nArea trabajada: "+areatrabajada+"\nID: "+idejercicio+"\nURL Imagen: "+urlimagen);
+  getsize(){
+    let id_:number;
+    let A =this.servicio.EncontrarEjercicio(-1).subscribe(datos=>{
+      id_ = datos.length;
+      return id_;
     });
-    this.ngOnInit();
+  }
+  AddExe(){  
+    this.servicio.LenghtEx().subscribe(aux=>{
+      console.log(aux);
+      let id= JSON.stringify(aux);
+      let id2=JSON.parse(id);
+      var data = {
+        "name" : this.formAddExe.controls['addexename'].value,
+        "desc" : this.formAddExe.controls['addexedesc'].value,
+        "demopath" : this.formAddExe.controls['addexefile'].value,
+        "diff" : this.formAddExe.controls['addexediff'].value,
+        "area" : this.formAddExe.controls['addexearea'].value,
+        "workarea" : this.formAddExe.controls['addexeworkarea'].value,
+        "duration" :this.formAddExe.controls['addexedur'].value,
+        "id":id2["count"]
+      }
+      this.servicio.InsertExercise(data).subscribe((respuesta) =>{
+        console.log(respuesta);
+      });
+      
+      $("#resultadoadd").html("El ejercicio \""+data.name+"\" se ha agregado exitosamente");
+      this.ngOnInit();
+    });  
+    
   }
 
   DelExe(){
     var delexeid = this.formDelExe.controls['delexeid'].value;
-    var encontrado:boolean = false;
-
-    $.getJSON("/assets/data/ejercicios.json", function(data) {
-      $.each(data.ejercicio,function(i, exe){
-          if(delexeid==parseInt(exe.id)){
-            $("#resultadodel").html("Se ha eliminado el ejercicio \""+exe.name+"\" exitosamente (PLACEHOLDER)");
-            encontrado = true;
-          }
-      });
-      if(encontrado==false){
+    
+    this.servicio.EncontrarEjercicio(Number(delexeid)).subscribe(aux=>{
+      console.log(aux);
+      if(aux.length==0){
+        
         $("#resultadodel").html("No existe un ejercicio con ese ID, comprueba e intenta nuevamente");
+
       }
-    });
-    this.ngOnInit();
+      else{
+        this.servicio.DeleteEx(delexeid).subscribe(msg=>{
+          console.log(msg);
+          $("#resultadodel").html("Se ha eliminado el ejercicio con ID\""+delexeid+"\" exitosamente");
+          this.ngOnInit();
+        });
+      }
+    })
+    
   }
 
   DelUser(){
     var delusermail = this.formDelUser.controls['delusermail'].value;
-    $("#deluserresult").html("Los datos del usuario identificado con el mail \""+delusermail+"\" han sido eliminados exitosamente (PLACEHOLDER)");
-    this.ngOnInit();
+    //if(this.servicioUsers.ValidarRegistroMail("null",delusermail))
+    console.log(delusermail);
+    this.servicioUsers.ValidarRegistroMail("NaN",delusermail).subscribe(obj=>{
+      if(obj.length==0){
+        $("#deluserresult").html("Email no registrado");
+          this.ngOnInit();
+      }
+      else{
+        this.servicioUsers.DeleteUser(delusermail).subscribe(respuesta =>{
+          console.log(respuesta);
+          $("#deluserresult").html("Los datos del usuario identificado con el mail \""+delusermail+"\" han sido eliminados exitosamente");
+          this.ngOnInit();
+        })
+      }
+    });
   }
+    
+  
 }
